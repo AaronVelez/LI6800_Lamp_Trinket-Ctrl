@@ -40,7 +40,7 @@ LED_Temp_Ctrl_pin = AnalogIn(board.A4)
 LED_Temp_pin = AnalogIn(board.A1)
 
 # Analog fan speed
-Fan_Speed = AnalogOut(board.A0)
+Fan_Speed_pin = AnalogOut(board.A0)
 
 
 
