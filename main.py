@@ -54,6 +54,11 @@ Ref_voltage = 3.3
 Div_R = 3.32 # Value of the voltage divider resistor in kohms
 # add all the constants for the termistor....
 
+a = [3.3538646E-03, 2.56544090E-04, 1.9243889E-06, 1.0969244E-07]
+b = [3.3540154E-03, 2.5627725E-04, 2.0829210E-06, 7.3002306E-08]
+c = [3.3539264E-03, 2.5609446E-04, 1.9621987E-06, 4.6045930E-08]
+d = [3.3368620E-03, 2.4057263E-04, -2.6687093E-06, -4.0719355E-07]
+
 # PID gains
 Kp = 0.00001 
 Ki = 0.002
@@ -72,16 +77,10 @@ Fan_Speed_voltage = 0.0
 
 
 ##### Main Loop
-
 import  board
 import  analogio
 import math
-
 thermistor  = analogio.AnalogIn(LED_Temp_pin)}
-a = [3.3538646E-03, 2.56544090E-04, 1.9243889E-06, 1.0969244E-07]
-b = [3.3540154E-03, 2.5627725E-04, 2.0829210E-06, 7.3002306E-08]
-c = [3.3539264E-03, 2.5609446E-04, 1.9621987E-06, 4.6045930E-08]
-d = [3.3368620E-03, 2.4057263E-04, -2.6687093E-06, -4.0719355E-07]
 R = 1000 / (65535/thermistor.value - 1)
 print('Thermistor resistance: {} ohms'.format(R))
 if R >= 68.600 and r < 3.274
