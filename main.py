@@ -15,7 +15,7 @@
 # Fan speed is encoded in an analog singal and sent to LI6800
 
 
-# Module imports
+##### Module imports
 import board
 import digitalio
 import analogio
@@ -23,11 +23,21 @@ import time
 
 
 
-# Set pin definitions
+##### Configure pins
+# 4-wire fan PWM control pin
+Fan_PWM = DigitalInOut(board.D4)
+Fan_PWM.direction = Direction.OUTPUT
+
+# 4-wire fan tachometer 
+Fan_Tach = DigitalInOut(board.D3)
+Fan_Tach.direction = Direction.INPUT
+Fan_Tach.pull = Pull.UP #### NEEDS ATENTION. I DO NOT KNO WIF IT SHOULD BE UP OR DOWN!!!!!!!!!!!!!!!!!!!!
+
+
 LED_Temp = AnalogIn(board.A1)
 
 
 
-# Main Loop
+##### Main Loop
 
 
