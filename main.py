@@ -77,7 +77,7 @@ import  board
 import  analogio
 import math
 
-thermistor  = analogio.AnalogIn(board.A1)}
+thermistor  = analogio.AnalogIn(LED_Temp_pin)}
 a = [3.3538646E-03, 2.56544090E-04, 1.9243889E-06, 1.0969244E-07]
 b = [3.3540154E-03, 2.5627725E-04, 2.0829210E-06, 7.3002306E-08]
 c = [3.3539264E-03, 2.5609446E-04, 1.9621987E-06, 4.6045930E-08]
