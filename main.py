@@ -23,7 +23,7 @@ import time
 
 
 
-##### Configure pins
+##### Pin definitions
 # 4-wire fan PWM control pin
 Fan_PWM_pin = DigitalInOut(board.D4)
 Fan_PWM_pin.direction = Direction.OUTPUT
@@ -42,6 +42,19 @@ LED_Temp_pin = AnalogIn(board.A1)
 # Analog fan speed
 Fan_Speed_pin = AnalogOut(board.A0)
 
+
+
+##### Constants definitions
+
+
+
+##### Variable definitions
+Fan_PWM_duty-cycle = 0
+Fan_Tach_rpm = 0
+LED_Temp_Ctrl_voltage = 0.0
+LED_Temp_voltage = 0.0
+LED_Temp_Cdeg =0.0
+Fan_Speed_voltage = 0.0
 
 
 
