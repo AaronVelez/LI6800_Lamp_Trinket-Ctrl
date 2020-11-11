@@ -45,6 +45,19 @@ Fan_Speed_pin = AnalogOut(board.A0)
 
 
 ##### Constants definitions
+# Reference voltge.
+# The real board voltage might differ from the nominal 3.3V. For better measurements, enter thevalue measured with a calibrated multimeter.
+Ref_voltage = 3.3
+
+# Thermistor constants
+# Juan, please add here your constants
+Div_R = 3.32 # Value of the voltage divider resistor in kohms
+# add all the constants for the termistor....
+
+# PID gains
+Kp = 0.00001 
+Ki = 0.002
+Kd = 0.000001
 
 
 
