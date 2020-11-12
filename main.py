@@ -6,7 +6,7 @@
 # Code for temperature control of LI6800 custum LED lamp
 
 # Details:
-# Runs in an Arduino-compatible Trinket board with an ARM Cortex M0+ processor
+# Runs in an Adafruit Trinket board with an ARM Cortex M0+ processor
 # It measures LED temperature using a thermistor
 # It controls a 4-wire fan via a 25kHz PWM signal
 # PWM duty cycle is set by a PID algorithm to control LED temperaure
@@ -48,6 +48,7 @@ Fan_Speed_pin = AnalogOut(board.A0)
 # Reference voltge.
 # The real board voltage might differ from the nominal 3.3V. For better measurements, enter thevalue measured with a calibrated multimeter.
 Ref_voltage = 3.3
+Fan_max_rpm = 3000
 
 # Thermistor constants
 # Juan, please add here your constants
@@ -62,12 +63,14 @@ Kd = 0.000001
 
 
 ##### Variable definitions
-Fan_PWM_duty-cycle-bits = 0     # In 16-bit format
+Fan_PWM_duty-cycle_bits = 0     # In 16-bit format
 Fan_Tach_rpm = 0
+Fan_Tach_bits = 0               # In 16-bit format
+Fan_Speed_voltage = 0.0
 LED_Temp_Ctrl_voltage = 0.0
+LED_Temp_Ctrl_Cdeg = 0.0
 LED_Temp_voltage = 0.0
 LED_Temp_Cdeg =0.0
-Fan_Speed_voltage = 0.0
 
 
 
@@ -153,13 +156,16 @@ while True:
   
   
   # Step 4. Run PID control algorithm.
-  # It calculates the required fan speed (in PWM duty cycle values IN 16-bit format) to achive the desired LED temperature taking into consideration the current and near past LED temperature.
+  # It calculates the required fan speed (in PWM duty cycle values IN 16-bit format) to achive the desired LED temperature.
+    # It takes into consideration the current and near past LED temperature.
     t = time.monotonic()
-    PV = 
-    SP =
-    TR =
-    MV = PID_fan.send([t, PV, SP, TR])   # compute manipulated variable
-
+    PV = LED_Temp_Cdeg
+    SP = LED_Temp_Ctrl_Cdeg
+    TR = Fan_Tach_bits
+    # Given time (t) process variable (PV), setpoint (SP) and tracked MV (TR), it returns manipulated variable (MV) and P, I, D and d
+    MV, P, I, D, d = PID_fan.send([t, PV, SP, TR])
+    Fan_PWM_duty-cycle_bits = MV
+    
 
   
   # Step 5. Set new Fan speed
