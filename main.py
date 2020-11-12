@@ -62,7 +62,7 @@ Kd = 0.000001
 
 
 ##### Variable definitions
-Fan_PWM_duty-cycle = 0
+Fan_PWM_duty-cycle-bits = 0     # In 16-bit format
 Fan_Tach_rpm = 0
 LED_Temp_Ctrl_voltage = 0.0
 LED_Temp_voltage = 0.0
@@ -72,31 +72,54 @@ Fan_Speed_voltage = 0.0
 
 
 ##### Functions
-# PID function attributed to https://github.com/jckantor/CBE30338
-def PID(Kp, Ki, Kd, MV_bar=0):
-    # initialize stored data
-    e_prev = 0
-    t_prev = -100
-    I = 0
+# PID function attributed to secction "4.5 Realizable PID Control" https://github.com/jckantor/CBE30338
+def PID(Kp, Ki, Kd, MV_bar=0, MV_min=0, MV_max=2**16, beta=1, gamma=0, N=10):       # beta and N needs tuning
+
+    # initial yield and return
+    data = yield MV_bar
+    t,  = data[0:3]
     
-    # initial control
-    MV = MV_bar
+    P = Kp*(beta*SP - PV)
+    MV = MV_bar + P
+    MV = 0 if MV < 0 else 100 if MV > 100 else MV
+    I = 0
+    D = 0
+    dI = 0
+    
+    S = Kd*(gamma*SP - PV)
+    t_prev = t
     
     while True:
-        # yield MV, wait for new t, PV, SP
-        t, PV, SP = yield MV
+        # yield MV, wait for new t, SP, PV, TR
+        data = yield MV, P, I, D, dI
+        
+        # see if a tracking data is being supplied
+        if len(data) < 4:
+            t, PV, SP = data
+        else:
+            t, PV, SP, TR = data
+            d = MV - TR
+            #I = TR - MV_bar - P - D
         
         # PID calculations
-        e = SP - PV
+        P = Kp*(beta*SP - PV)
+        eD = gamma*SP - PV
+        D = N*Kp*(Kd*eD - S)/(Kd + N*Kp*(t - t_prev))
         
-        P = Kp*e
-        I = I + Ki*e*(t - t_prev)
-        D = Kd*(e - e_prev)/(t - t_prev)
+        # conditional integration
+        dI = Ki*(SP - PV)*(t - t_prev)
+        if (MV_bar + P + I + D + dI) > MV_max:
+            dI = max(0, min(dI, MV_max - MV_bar - P - I - D))
+        if (MV_bar + P + I + D + dI) < MV_min:
+            dI += min(0, max(dI, MV_min - MV_bar - P - I - D))
+        I += dI
+        MV = MV_bar + P + I + D 
         
-        MV = MV_bar + P + I + D
+        # Clamp MV to range 0 to 100 for anti-reset windup
+        MV = max(MV_min, min(MV_max, MV))
         
         # update stored data for next iteration
-        e_prev = e
+        S = D*(t - t_prev) + S
         t_prev = t
 
 
