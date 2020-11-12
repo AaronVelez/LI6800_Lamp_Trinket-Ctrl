@@ -83,19 +83,23 @@ Fan_Speed_voltage = 0.0
   # 2.1 Read analog voltage at LED_Temp_pin
   # 2.2 Translate read voltage to Thermistor resistance
   # 2.3 Translate thermistor resistance to LED temperature
-Voltage_out = (LED_Temp_pin * Ref_voltage)/65535
-R = (Voltage_out*3.32)/(Ref_voltage - Voltage_out)
-## Borrar este print envetualmente.
-print('Thermistor resistance: {} ohms'.format(R))
-if R >= 68.600 and R < 3.274
-   LED_Temp_Cdeg = (a1 + a2)*(math.ln(r))+(a3)*(math.ln(R))**2+(a4)*(math.ln(R))**3 - 273 
-  elif R >= 3.274 and R < 0.36036: 
-    LED_Temp_Cdeg = (b1 + b2)*(math.ln(R))+(b3)*(math.ln(R))**2+(b4)*(math.ln(R))**3 - 273
-  elif R >= 0.36036 and R < 0.06831:
-    LED_Temp_Cdeg = (c1+ c2*(math.ln(R))+(c3)*(math.ln(R))**2+(c4)*(math.ln(R))**3 - 273
-  else:
-    LED_Temp_Cdeg = (d1+ d2*(math.ln(R))+(d3)*(math.ln(R))**2+(d4)*(math.ln(R))**3 - 273
+  Voltage_out = (LED_Temp_pin * Ref_voltage)/65535
+  R = (Voltage_out*3.32)/(Ref_voltage - Voltage_out)
+  ## Borrar este print envetualmente.
+  print('Thermistor resistance: {} ohms'.format(R))
+  if R >= 68.600 and R < 3.274
+     LED_Temp_Cdeg = (a1 + a2)*(math.ln(r))+(a3)*(math.ln(R))**2+(a4)*(math.ln(R))**3 - 273 
+    elif R >= 3.274 and R < 0.36036: 
+      LED_Temp_Cdeg = (b1 + b2)*(math.ln(R))+(b3)*(math.ln(R))**2+(b4)*(math.ln(R))**3 - 273
+    elif R >= 0.36036 and R < 0.06831:
+      LED_Temp_Cdeg = (c1+ c2*(math.ln(R))+(c3)*(math.ln(R))**2+(c4)*(math.ln(R))**3 - 273
+    else:
+      LED_Temp_Cdeg = (d1+ d2*(math.ln(R))+(d3)*(math.ln(R))**2+(d4)*(math.ln(R))**3 - 273
          
-print ('Temperature: {} °C'.format(LED_Temp_Cdeg))
-
-
+  print ('Temperature: {} °C'.format(LED_Temp_Cdeg))
+  
+  # Step 3. Read fan speed and send it to LI6800
+  # 3.1 Read digital pulses at Fan_Tach_pin
+  # 3.2 Calculate fan speed in rpm
+  # 3.3 Convert it to analog voltage value using constant (needs to be added to constants)
+  # 3.4 Write analog voltage value to Fan_Speed_pin
