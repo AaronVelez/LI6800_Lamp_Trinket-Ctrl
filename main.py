@@ -78,6 +78,11 @@ Fan_Speed_voltage = 0.0
 
 ##### Main Loop
 
+
+  # Step 2. Read LED temperature
+  # 2.1 Read analog voltage at LED_Temp_pin
+  # 2.2 Translate read voltage to Thermistor resistance
+  # 2.3 Translate thermistor resistance to LED temperature
 Voltage_out = (LED_Temp_pin * Ref_voltage)/65535
 R = (Voltage_out*3.32)/(Ref_voltage - Voltage_out)
 ## Borrar este print envetualmente.
