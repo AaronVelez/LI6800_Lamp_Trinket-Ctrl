@@ -20,7 +20,7 @@ import board
 import digitalio
 import analogio
 import time
-
+import math
 
 
 ##### Pin definitions
@@ -77,22 +77,19 @@ Fan_Speed_voltage = 0.0
 
 
 ##### Main Loop
-import  board
-import  analogio
-import math
-thermistor  = analogio.AnalogIn(LED_Temp_pin)}
-R = 1000 / (65535/thermistor.value - 1)
+
+Voltage_out = (pin.value * Ref_voltage)/65535
+R = (Voltage_out*3.32)/(Ref_voltage - Voltage_out)
 print('Thermistor resistance: {} ohms'.format(R))
-if R >= 68.600 and r < 3.274
-    T = (a1 + a2)*(math.ln(r))+(a3)*(math.ln(r))**2+(a4)*(math.ln(r))**3 
-  elif r >= 3.274 and r < 0.36036: 
-    T = (b1 + b2)*(math.ln(r))+(b3)*(math.ln(r))**2+(b4)*(math.ln(r))**3 
-  elif r >= 0.36036 and < 0.06831:
-    T = (c1+ c2*(math.ln(r))+(c3)*(math.ln(r))**2+(c4)*(math.ln(r))**3
+if R >= 68.600 and R < 3.274
+    T = (a1 + a2)*(math.ln(r))+(a3)*(math.ln(R))**2+(a4)*(math.ln(R))**3 + 273 
+  elif R >= 3.274 and R < 0.36036: 
+    T = (b1 + b2)*(math.ln(R))+(b3)*(math.ln(R))**2+(b4)*(math.ln(R))**3 + 273
+  elif R >= 0.36036 and R < 0.06831:
+    T = (c1+ c2*(math.ln(R))+(c3)*(math.ln(R))**2+(c4)*(math.ln(R))**3 + 273
   else:
-    T = (d1+ d2*(math.ln(r))+(d3)*(math.ln(r))**2+(d4)*(math.ln(r))**3
+    T = (d1+ d2*(math.ln(r))+(d3)*(math.ln(R))**2+(d4)*(math.ln(R))**3 + 273
          
-T = T + 273
 print ('Temperature: {} °C'.format(T))
 
 
