@@ -2,9 +2,9 @@
 # Created: 10/11/2020
 # Authors: Juan de Dios Moreno González y Aarón I. Vélez Ramírez
 # Universidad Nacional Autónoma de México
-
+#
 # Code for temperature control of LI6800 custum LED lamp
-
+#
 # Details:
 # Runs in an Adafruit Trinket board with an ARM Cortex M0+ processor
 # It measures LED temperature using a thermistor
@@ -149,13 +149,15 @@ PID_fan.send(None)
 while True:
   # Step 1. Read LED temperature setpoin defined by LI6800.
   # 1.1 Read analog voltage proportional to desired LED temperature at LED_Temp_Ctrl_pin
-  # 1.2 Convert it to °C using constant (needs to be added to constants)
+  # 1.2 Convert it to °C using constant (needs to be added to constants) and store it in LED_Temp_Ctrl_Cdeg
   
   
   # Step 2. Read LED temperature
-  # 2.1 Read analog voltage at LED_Temp_pin
+  # 2.1 Read analog voltage at LED_Temp_pin and store it in LED_Temp_voltage
   # 2.2 Translate read voltage to Thermistor resistance
-  # 2.3 Translate thermistor resistance to LED temperature
+  # 2.3 Translate thermistor resistance to LED temperature and store it in LED_Temp_Cdeg 
+
+
   Voltage_out = (LED_Temp_pin * Ref_voltage)/65535
   R = (Voltage_out*3.32)/(Ref_voltage - Voltage_out)
   ## Borrar este print envetualmente.
@@ -174,9 +176,10 @@ while True:
 
   # Step 3. Read fan speed and send it to LI6800
   # 3.1 Read digital pulses at Fan_Tach_pin
-  # 3.2 Calculate fan speed in rpm
-  # 3.3 Convert it to analog voltage value using constant (needs to be added to constants)
-  # 3.4 Write analog voltage value to Fan_Speed_pin
+  # 3.2 Calculate fan speed in rpm and store it in Fan_Tach_rpm
+  # 3.3 Convert Fan_Tach_rpm into a 16-bit value, mapping the maximum fan speed (Fan_max_rpm constant) to 65,536, and store it in Fan_Tach_bits
+  # 3.4 Convert Fan_Tach_rpm to an analog voltage value using constant (needs to be added to constants) and store it in Fan_Speed_voltage
+  # 3.5 Write Fan_Speed_voltage value to Fan_Speed_pin, so LI6800 can read it
   
   
   # Step 4. Run PID control algorithm.
@@ -193,7 +196,7 @@ while True:
 
   
   # Step 5. Set new Fan speed
-  # 5.1 Write to Fan_PWM_pin the new PWM duty cycle calculated by the PID algorithm
+  # 5.1 Write to Fan_PWM_pin the new PWM duty cycle in 16-bit format (Fan_PWM_duty-cycle_bits) calculated by the PID algorithm
   
   
   # Step 6. Wait or no wait before executing the loop again (to be defined later).
