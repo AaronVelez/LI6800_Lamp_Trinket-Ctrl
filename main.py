@@ -78,18 +78,19 @@ Fan_Speed_voltage = 0.0
 
 ##### Main Loop
 
-Voltage_out = (pin.value * Ref_voltage)/65535
+Voltage_out = (LED_Temp_pin * Ref_voltage)/65535
 R = (Voltage_out*3.32)/(Ref_voltage - Voltage_out)
+## Borrar este print envetualmente.
 print('Thermistor resistance: {} ohms'.format(R))
 if R >= 68.600 and R < 3.274
-    T = (a1 + a2)*(math.ln(r))+(a3)*(math.ln(R))**2+(a4)*(math.ln(R))**3 + 273 
+   LED_Temp_Cdeg = (a1 + a2)*(math.ln(r))+(a3)*(math.ln(R))**2+(a4)*(math.ln(R))**3 - 273 
   elif R >= 3.274 and R < 0.36036: 
-    T = (b1 + b2)*(math.ln(R))+(b3)*(math.ln(R))**2+(b4)*(math.ln(R))**3 + 273
+    LED_Temp_Cdeg = (b1 + b2)*(math.ln(R))+(b3)*(math.ln(R))**2+(b4)*(math.ln(R))**3 - 273
   elif R >= 0.36036 and R < 0.06831:
-    T = (c1+ c2*(math.ln(R))+(c3)*(math.ln(R))**2+(c4)*(math.ln(R))**3 + 273
+    LED_Temp_Cdeg = (c1+ c2*(math.ln(R))+(c3)*(math.ln(R))**2+(c4)*(math.ln(R))**3 - 273
   else:
-    T = (d1+ d2*(math.ln(r))+(d3)*(math.ln(R))**2+(d4)*(math.ln(R))**3 + 273
+    LED_Temp_Cdeg = (d1+ d2*(math.ln(r))+(d3)*(math.ln(R))**2+(d4)*(math.ln(R))**3 - 273
          
-print ('Temperature: {} °C'.format(T))
+print ('Temperature: {} °C'.format(LED_Temp_Cdeg))
 
 
