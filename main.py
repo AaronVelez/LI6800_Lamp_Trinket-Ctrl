@@ -89,7 +89,7 @@ if R >= 68.600 and R < 3.274
   elif R >= 0.36036 and R < 0.06831:
     LED_Temp_Cdeg = (c1+ c2*(math.ln(R))+(c3)*(math.ln(R))**2+(c4)*(math.ln(R))**3 - 273
   else:
-    LED_Temp_Cdeg = (d1+ d2*(math.ln(r))+(d3)*(math.ln(R))**2+(d4)*(math.ln(R))**3 - 273
+    LED_Temp_Cdeg = (d1+ d2*(math.ln(R))+(d3)*(math.ln(R))**2+(d4)*(math.ln(R))**3 - 273
          
 print ('Temperature: {} °C'.format(LED_Temp_Cdeg))
 
