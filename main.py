@@ -73,6 +73,9 @@ Fan_Speed_voltage = 0.0
 
 ##### Main Loop
 
+  # Step 5. Set new Fan speed
+  # 5.1 Write to Fan_PWM_pin the new PWM duty cycle calculated by the PID algorithm
+  
 piezo = pulseio.PWMOut(Fan_PWM_pin, duty_cycle=0, frequency=440, variable_frequency=True)
   while True:
     for f in (262, 294, 330, 349, 392, 440, 494, 523):
