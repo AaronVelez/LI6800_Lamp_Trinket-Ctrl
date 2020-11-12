@@ -101,7 +101,10 @@ def PID(Kp, Ki, Kd, MV_bar=0):
 
 
 ##### Setup
-# PID setup
+# Create and initialize PID control
+PID_fan = PID(Kp, Ki, Kd)
+PID_fan.send(None) 
+
 
 
 ##### Main Loop
