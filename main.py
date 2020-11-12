@@ -85,4 +85,6 @@ Fan_Speed_voltage = 0.0
         piezo.duty_cycle = 0
         time.sleep(0.05)
       time.sleep(0.5)
-              
+  
+  
+  # Step 6. Wait or no wait before executing the loop again (to be defined later).    
