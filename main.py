@@ -55,10 +55,16 @@ Fan_max_rpm = 3000
 Div_R = 3.32 # Value of the voltage divider resistor in kohms
 # add all the constants for the termistor....
 
-# PID gains
+# PID gains and parameters
 Kp = 0.00001 
 Ki = 0.002
 Kd = 0.000001
+beta = 1
+gamma = 0
+N = 10
+MV_min = 0
+MV_max = 2**16
+
 
 
 
@@ -129,7 +135,7 @@ def PID(Kp, Ki, Kd, MV_bar=0, MV_min=0, MV_max=100, beta=1, gamma=0, N=10):
 
 ##### Setup
 # Create and initialize PID control
-PID_fan = PID(Kp, Ki, Kd, MV_min=0, MV_max=2**16, beta=1, gamma=0, N=10) # NEEDS TUNING!
+PID_fan = PID(Kp, Ki, Kd, MV_min, MV_max, beta, gamma, N) # NEEDS TUNING!
 PID_fan.send(None) 
 
 
