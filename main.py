@@ -73,7 +73,7 @@ Fan_Speed_voltage = 0.0
 
 ##### Functions
 # PID function attributed to secction "4.5 Realizable PID Control" https://github.com/jckantor/CBE30338
-def PID(Kp, Ki, Kd, MV_bar=0, MV_min=0, MV_max=2**16, beta=1, gamma=0, N=10):       # beta and N needs tuning
+def PID(Kp, Ki, Kd, MV_bar=0, MV_min=0, MV_max=100, beta=1, gamma=0, N=10):
 
     # initial yield and return
     data = yield MV_bar
@@ -122,10 +122,11 @@ def PID(Kp, Ki, Kd, MV_bar=0, MV_min=0, MV_max=2**16, beta=1, gamma=0, N=10):   
         S = D*(t - t_prev) + S
         t_prev = t
 
+        
 
 ##### Setup
 # Create and initialize PID control
-PID_fan = PID(Kp, Ki, Kd)
+PID_fan = PID(Kp, Ki, Kd, MV_min=0, MV_max=2**16, beta=1, gamma=0, N=10) # NEEDS TUNING!
 PID_fan.send(None) 
 
 
