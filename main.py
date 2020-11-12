@@ -73,4 +73,13 @@ Fan_Speed_voltage = 0.0
 
 ##### Main Loop
 
-
+piezo = pulseio.PWMOut(Fan_PWM_pin, duty_cycle=0, frequency=440, variable_frequency=True)
+  while True:
+    for f in (262, 294, 330, 349, 392, 440, 494, 523):
+      piezo.frequency = f
+      piezo.duty_cycle = 65535
+      time.sleep(0.25)
+      piezo.duty_cycle = 0
+      time.sleep(0.05)
+     time.sleep(0.5)
+              
