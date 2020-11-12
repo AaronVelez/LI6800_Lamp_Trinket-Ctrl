@@ -72,9 +72,12 @@ Fan_Speed_voltage = 0.0
 
 
 ##### Functions
-# PID Function
+# PID function
 
 
+
+##### Setup
+# PID setup
 
 
 ##### Main Loop
