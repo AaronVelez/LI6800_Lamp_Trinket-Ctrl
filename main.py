@@ -71,6 +71,32 @@ Fan_Speed_voltage = 0.0
 
 
 
-##### Main Loop
+##### Main Loop that runs forever
+while True:
+  # Step 1. Read LED temperature setpoin defined by LI6800.
+  # 1.1 Read analog voltage proportional to desired LED temperature at LED_Temp_Ctrl_pin
+  # 1.2 Convert it to °C using constant (needs to be added to constants)
+  
+  
+  # Step 2. Read LED temperature
+  # 2.1 Read analog voltage at LED_Temp_pin
+  # 2.2 Translate read voltage to Thermistor resistance
+  # 2.3 Translate thermistor resistance to LED temperature
 
 
+  # Step 3. Read fan speed and send it to LI6800
+  # 3.1 Read digital pulses at Fan_Tach_pin
+  # 3.2 Calculate fan speed in rpm
+  # 3.3 Convert it to analog voltage value using constant (needs to be added to constants)
+  # 3.4 Write analog voltage value to Fan_Speed_pin
+  
+  
+  # Step 4. Run PID control algorithm.
+  # It calculates the required fan speed (in PWM duty cycle values) to achive the desired LED temperature taking into consideration the current and near past LED temperature.
+ 
+  
+  # Step 5. Set new Fan speed
+  # 5.1 Write to Fan_PWM_pin the new PWM duty cycle calculated by the PID algorithm
+  
+  
+  # Step 6. Wait or no wait before executing the loop again (to be defined later).
