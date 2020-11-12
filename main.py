@@ -81,7 +81,7 @@ def PID(Kp, Ki, Kd, MV_bar=0, MV_min=0, MV_max=100, beta=1, gamma=0, N=10):
     
     P = Kp*(beta*SP - PV)
     MV = MV_bar + P
-    MV = 0 if MV < 0 else 100 if MV > 100 else MV
+    MV = MV_min if MV < MV_min else MV_max if MV > MV_max else MV
     I = 0
     D = 0
     dI = 0
@@ -153,8 +153,14 @@ while True:
   
   
   # Step 4. Run PID control algorithm.
-  # It calculates the required fan speed (in PWM duty cycle values) to achive the desired LED temperature taking into consideration the current and near past LED temperature.
- 
+  # It calculates the required fan speed (in PWM duty cycle values IN 16-bit format) to achive the desired LED temperature taking into consideration the current and near past LED temperature.
+    t = time.monotonic()
+    PV = 
+    SP =
+    TR =
+    MV = PID_fan.send([t, PV, SP, TR])   # compute manipulated variable
+
+
   
   # Step 5. Set new Fan speed
   # 5.1 Write to Fan_PWM_pin the new PWM duty cycle calculated by the PID algorithm
