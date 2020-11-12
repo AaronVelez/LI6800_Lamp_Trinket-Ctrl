@@ -71,7 +71,8 @@ Fan_Speed_voltage = 0.0
 
 
 
-##### Main Loop that runs forever
+##### Main Loop
+##### It runs forever
 while True:
   # Step 1. Read LED temperature setpoin defined by LI6800.
   # 1.1 Read analog voltage proportional to desired LED temperature at LED_Temp_Ctrl_pin
