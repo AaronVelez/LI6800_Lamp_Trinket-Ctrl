@@ -76,6 +76,15 @@ Fan_Speed_voltage = 0.0
 
 
 
+##### Functions
+# PID function
+
+
+
+##### Setup
+# PID setup
+
+
 ##### Main Loop
 ##### It runs forever
 while True:
