@@ -159,7 +159,7 @@ while True:
 
 
   LED_Temp_voltage = (LED_Temp_pin * Ref_voltage)/65535
-  R = (LED_Temp_voltage*3.32)/(Ref_voltage - LED_Temp_voltage)
+  R = (LED_Temp_voltage*Div_R)/(Ref_voltage - LED_Temp_voltage)
   ## Borrar este print envetualmente.
   print('Thermistor resistance: {} ohms'.format(R))
   if R >= 68.600 and R < 3.274
