@@ -50,8 +50,8 @@ Fan_Speed_pin = AnalogOut(board.A0)
 Ref_voltage = 3.3
 
 # Fan parameters
-hall_threshold = 100
-rpm_hall = 2
+hall_threshold = 100        # Hall counts per rpm estimation event
+rpm_hall = 2                # Hall counts per revolution
 Fan_max_rpm = 3000 * 1.2    # Nominal max fan speed plus 20% tolerance
 
 # Thermistor parameters
