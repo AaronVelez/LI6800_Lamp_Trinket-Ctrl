@@ -158,7 +158,7 @@ while True:
   # 2.3 Translate thermistor resistance to LED temperature and store it in LED_Temp_Cdeg 
 
 
-  LED_Temp_voltage = (LED_Temp_pin * Ref_voltage)/65535
+  LED_Temp_voltage = (LED_Temp_pin.value * Ref_voltage)/65535
   R = (LED_Temp_voltage*Div_R)/(Ref_voltage - LED_Temp_voltage)
   ## Borrar este print envetualmente.
   print('Thermistor resistance: {} ohms'.format(R))
