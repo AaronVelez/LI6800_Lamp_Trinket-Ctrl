@@ -217,6 +217,7 @@ while True:
     Fan_Speed_pin.value = Fan_Tach_bits
 
     
+
     # Step 4. Run PID control algorithm.
     # It calculates the required fan speed (in PWM duty cycle values IN 16-bit format) to achive the desired LED temperature.
     # It takes into consideration the current and near past LED temperature.
