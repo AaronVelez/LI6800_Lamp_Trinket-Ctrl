@@ -31,7 +31,7 @@ Fan_PWM_pin.direction = Direction.OUTPUT
 # 4-wire fan tachometer 
 Fan_Tach_pin = DigitalInOut(board.D3)
 Fan_Tach_pin.direction = Direction.INPUT
-Fan_Tach_pin.pull = Pull.UP #### NEEDS ATENTION. I DO NOT KNO WIF IT SHOULD BE UP OR DOWN!!!!!!!!!!!!!!!!!!!!
+Fan_Tach_pin.pull = Pull.UP
 
 # Analog LED temperature setpoint
 LED_Temp_Ctrl_pin = AnalogIn(board.A4)
@@ -48,7 +48,11 @@ Fan_Speed_pin = AnalogOut(board.A0)
 # Reference voltge.
 # The real board voltage might differ from the nominal 3.3V. For better measurements, enter thevalue measured with a calibrated multimeter.
 Ref_voltage = 3.3
-Fan_max_rpm = 3000
+
+# Fan parameters
+hall_threshold = 100
+rpm_hall = 2
+Fan_max_rpm = 3000 * 1.2    # Nominal max fan speed plus 20% tolerance
 
 # Thermistor parameters
 Nom_R = 10      # Nominal thermistor resistance at 25°C
@@ -147,6 +151,7 @@ PID_fan.send(None)
 ##### Main Loop
 ##### It runs forever
 while True:
+    #
   # Step 1. Read LED temperature setpoin defined by LI6800.
   # 1.1 Read analog voltage proportional to desired LED temperature at LED_Temp_Ctrl_pin
   # 1.2 Convert it to °C using constant (needs to be added to constants) and store it in LED_Temp_Ctrl_Cdeg
@@ -187,11 +192,31 @@ while True:
 
   # Step 3. Read fan speed and send it to LI6800
   # 3.1 Read digital pulses at Fan_Tach_pin
-  # 3.2 Calculate fan speed in rpm and store it in Fan_Tach_rpm
-  # 3.3 Convert Fan_Tach_rpm into a 16-bit value, mapping the maximum fan speed (Fan_max_rpm constant) to 65,536, and store it in Fan_Tach_bits
-  # 3.4 Convert Fan_Tach_rpm to an analog voltage value using constant (needs to be added to constants) and store it in Fan_Speed_voltage
-  # 3.5 Write Fan_Speed_voltage value to Fan_Speed_pin, so LI6800 can read it
+  hall_count = 0
+  on_state = False
+  start = time.monotonic()
+  while True:
+      if Fan_Tach_pin.value = False:
+          if on_state = False:
+              on_state = True
+              hall_count += 1
+      else:
+          on_state = False
+      if hall_count >= hall_threshold:
+          break
+  end = time.monotonic()
   
+  # 3.2 Calculate fan speed in rpm and store it in Fan_Tach_rpm
+  Fan_Tach_rpm = (hall_count / (end - start)) / rpm_hall
+ 
+  # 3.3 Convert Fan_Tach_rpm into a 16-bit value, mapping the maximum fan speed (Fan_max_rpm constant) to 65,536,
+  # and store it in Fan_Tach_bits
+  Fan_Tach_bits = (Fan_Tach_rpm * 2**16) / Fan_max_rpm
+  
+  # 3.4 Output Fan_Speed_voltage value to Fan_Speed_pin, so LI6800 can read it
+  # AnalogOut.value acepts 16-bit values; so Fan_Tach_bits is mapped from 0 to 3.3 V by board 
+  Fan_Speed_pin.value = Fan_Tach_bits
+
   
   # Step 4. Run PID control algorithm.
   # It calculates the required fan speed (in PWM duty cycle values IN 16-bit format) to achive the desired LED temperature.
