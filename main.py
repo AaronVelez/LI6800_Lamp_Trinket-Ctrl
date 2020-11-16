@@ -20,7 +20,7 @@ import board
 import digitalio
 import analogio
 import time
-
+import math
 
 
 ##### Pin definitions
@@ -50,10 +50,14 @@ Fan_Speed_pin = AnalogOut(board.A0)
 Ref_voltage = 3.3
 Fan_max_rpm = 3000
 
-# Thermistor constants
-# Juan, please add here your constants
-Div_R = 3.32 # Value of the voltage divider resistor in kohms
-# add all the constants for the termistor....
+# Thermistor parameters
+Nom_R = 10      # Nominal thermistor resistance at 25°C
+Div_R = 3.32    # Value of the voltage divider resistor in kohms
+# Manufacturer (Amphenol) constants for calculate termistor resistance of material type F
+a = [3.3538646E-03, 2.56544090E-04, 1.9243889E-06, 1.0969244E-07]
+b = [3.3540154E-03, 2.5627725E-04, 2.0829210E-06, 7.3002306E-08]
+c = [3.3539264E-03, 2.5609446E-04, 1.9621987E-06, 4.6045930E-08]
+d = [3.3368620E-03, 2.4057263E-04, -2.6687093E-06, -4.0719355E-07]
 
 # PID gains and parameters
 Kp = 0.00001 
@@ -150,8 +154,35 @@ while True:
   
   # Step 2. Read LED temperature
   # 2.1 Read analog voltage at LED_Temp_pin and store it in LED_Temp_voltage
+  LED_Temp_voltage = (LED_Temp_pin.value * Ref_voltage)/2**16
+  
   # 2.2 Translate read voltage to Thermistor resistance
+  Thermistor_R = (LED_Temp_voltage*Div_R)/(Ref_voltage - LED_Temp_voltage)
+  print('Thermistor resistance: {} ohms'.format(Thermistor_R))                  ## Borrar este print envetualmente.
+  
   # 2.3 Translate thermistor resistance to LED temperature and store it in LED_Temp_Cdeg 
+  if Thermistor_R/Nom_R >= 68.6 and Thermistor_R/Nom_R < 3.274:         # -50 to 0 °C range
+      LED_Temp_Cdeg = (a1 +
+                       (a2*math.ln(Thermistor_R/Nom_R)) +
+                       ((a3*math.ln(Thermistor_R/Nom_R))**2) +
+                       ((a4*math.ln(Thermistor_R/Nom_R))**3) ) - 273.15
+  elif Thermistor_R/Nom_R >= 3.274 and Thermistor_R/Nom_R < 0.36036:    # 0 to 50 °C range
+      LED_Temp_Cdeg = (b1 +
+                       (b2*math.ln(Thermistor_R/Nom_R)) +
+                       ((b3*math.ln(Thermistor_R/Nom_R))**2) +
+                       ((b4*math.ln(Thermistor_R/Nom_R))**3) ) - 273.15
+  elif Thermistor_R/Nom_R >= 0.36036 and Thermistor_R/Nom_R < 0.06831:  # 50 to 100 °C range
+      LED_Temp_Cdeg = (c1 +
+                       (c2*math.ln(Thermistor_R/Nom_R)) +
+                       ((c3*math.ln(Thermistor_R/Nom_R))**2) +
+                       ((c4*math.ln(Thermistor_R/Nom_R))**3) ) - 273.15
+  else:                                                                 # 100 to 150 °C range
+      LED_Temp_Cdeg = (d1 +
+                       (d2*math.ln(Thermistor_R/Nom_R)) +
+                       ((d3*math.ln(Thermistor_R/Nom_R))**2) +
+                       ((d4*math.ln(Thermistor_R/Nom_R))**3) ) - 273.15
+  print ('Temperature: {} °C'.format(LED_Temp_Cdeg))                            ## Borrar este print envetualmente.
+  
 
 
   # Step 3. Read fan speed and send it to LI6800
