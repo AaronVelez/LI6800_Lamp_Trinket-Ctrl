@@ -196,7 +196,7 @@ while True:
     start = time.monotonic()
     while True:
         if Fan_Tach_pin.value == False:
-            if on_state = False:
+            if on_state == False:
                 on_state = True
                 hall_count += 1
         else:
