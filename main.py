@@ -19,14 +19,14 @@
 import board
 import digitalio
 import analogio
+import pulseio
 import time
 import math
 
 
 ##### Pin definitions
 # 4-wire fan PWM control pin
-Fan_PWM_pin = DigitalInOut(board.D4)
-Fan_PWM_pin.direction = Direction.OUTPUT
+Fan_PWM_pin = pulseio.PWMOut(board.D4, frequency=25000, duty_cycle=0)
 
 # 4-wire fan tachometer 
 Fan_Tach_pin = DigitalInOut(board.D3)
@@ -232,4 +232,4 @@ while True:
     
     # Step 5. Set new Fan speed
     # 5.1 Write to Fan_PWM_pin the new PWM duty cycle in 16-bit format (Fan_PWM_duty-cycle_bits) calculated by the PID algorithm
-    
+    Fan_PWM_pin.duty_cycle = Fan_PWM_duty-cycle_bits
