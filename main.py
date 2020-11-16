@@ -15,7 +15,7 @@
 # Fan speed is encoded in an analog singal and sent to LI6800
 
 
-##### Module imports
+##### Module imports test
 import board
 import digitalio
 import analogio
