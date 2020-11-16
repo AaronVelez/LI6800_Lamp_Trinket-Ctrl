@@ -77,7 +77,7 @@ MV_max = 2**16
 
 
 ##### Variable definitions
-Fan_PWM_duty-cycle_bits = 0     # In 16-bit format
+Fan_PWM_duty_cycle_bits = 0     # In 16-bit format
 Fan_Tach_rpm = 0
 Fan_Tach_bits = 0               # In 16-bit format
 Fan_Speed_voltage = 0.0
@@ -226,10 +226,10 @@ while True:
     TR = Fan_Tach_bits
     # Given time (t) process variable (PV), setpoint (SP) and tracked MV (TR), it returns manipulated variable (MV) and P, I, D and d
     MV, P, I, D, d = PID_fan.send([t, PV, SP, TR])
-    Fan_PWM_duty-cycle_bits = MV
+    Fan_PWM_duty_cycle_bits = MV
     
 
     
     # Step 5. Set new Fan speed
-    # 5.1 Write to Fan_PWM_pin the new PWM duty cycle in 16-bit format (Fan_PWM_duty-cycle_bits) calculated by the PID algorithm
-    Fan_PWM_pin.duty_cycle = Fan_PWM_duty-cycle_bits
+    # 5.1 Write to Fan_PWM_pin the new PWM duty cycle in 16-bit format (Fan_PWM_duty_cycle_bits) calculated by the PID algorithm
+    Fan_PWM_pin.duty_cycle = Fan_PWM_duty_cycle_bits
