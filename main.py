@@ -63,6 +63,10 @@ b = [3.3540154E-03, 2.5627725E-04, 2.0829210E-06, 7.3002306E-08]
 c = [3.3539264E-03, 2.5609446E-04, 1.9621987E-06, 4.6045930E-08]
 d = [3.3368620E-03, 2.4057263E-04, -2.6687093E-06, -4.0719355E-07]
 
+#Reference temperature
+Temp_Ctrl_Cdeg = 80
+Temp_REF_Cdeg = 22
+
 # PID gains and parameters
 Kp = 0.00001 
 Ki = 0.002
@@ -153,8 +157,14 @@ PID_fan.send(None)
 while True:
     # Step 1. Read LED temperature setpoin defined by LI6800.
     # 1.1 Read analog voltage proportional to desired LED temperature at LED_Temp_Ctrl_pin
-    # 1.2 Convert it to °C using constant (needs to be added to constants) and store it in LED_Temp_Ctrl_Cdeg
     
+         LED_Temp_Ctrl_voltage = (LED_Temp_Ctrl_pin.value * Ref_voltage)/2**16
+        
+    # 1.2 Convert it to °C using constant (needs to be added to constants) and store it in LED_Temp_Ctrl_Cdeg
+       if LED_Temp_Ctrl_voltage <= 0:
+            LED_Temp_Ctrl_Cdeg = Temp_REF_Cdeg
+        else:
+            LED_Temp_Ctrl_Cdeg = ((LED_Temp_Ctrl_voltage *Temp_Ctrl_Cdeg)/Ref_voltage)    
     
     # Step 2. Read LED temperature
     # 2.1 Read analog voltage at LED_Temp_pin and store it in LED_Temp_voltage
