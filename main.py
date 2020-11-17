@@ -167,24 +167,24 @@ while True:
     # 2.3 Translate thermistor resistance to LED temperature and store it in LED_Temp_Cdeg 
     if Thermistor_R/Nom_R >= 68.6 and Thermistor_R/Nom_R < 3.274:         # -50 to 0 °C range
         LED_Temp_Cdeg = (a[1] +
-                         (a[2]*math.ln(Thermistor_R/Nom_R)) +
-                         ((a[3]*math.ln(Thermistor_R/Nom_R))**2) +
-                         ((a[4]*math.ln(Thermistor_R/Nom_R))**3) ) - 273.15
+                         (a[2]*math.log(Thermistor_R/Nom_R)) +
+                         ((a[3]*math.log(Thermistor_R/Nom_R))**2) +
+                         ((a[4]*math.log(Thermistor_R/Nom_R))**3) ) - 273.15
     elif Thermistor_R/Nom_R >= 3.274 and Thermistor_R/Nom_R < 0.36036:    # 0 to 50 °C range
         LED_Temp_Cdeg = (b1 +
-                         (b[2]*math.ln(Thermistor_R/Nom_R)) +
-                         ((b[3]*math.ln(Thermistor_R/Nom_R))**2) +
-                         ((b[4]*math.ln(Thermistor_R/Nom_R))**3) ) - 273.15
+                         (b[2]*math.log(Thermistor_R/Nom_R)) +
+                         ((b[3]*math.log(Thermistor_R/Nom_R))**2) +
+                         ((b[4]*math.log(Thermistor_R/Nom_R))**3) ) - 273.15
     elif Thermistor_R/Nom_R >= 0.36036 and Thermistor_R/Nom_R < 0.06831:  # 50 to 100 °C range
         LED_Temp_Cdeg = (c[1] +
-                         (c[2]*math.ln(Thermistor_R/Nom_R)) +
-                         ((c[3]*math.ln(Thermistor_R/Nom_R))**2) +
-                         ((c[4]*math.ln(Thermistor_R/Nom_R))**3) ) - 273.15
+                         (c[2]*math.log(Thermistor_R/Nom_R)) +
+                         ((c[3]*math.log(Thermistor_R/Nom_R))**2) +
+                         ((c[4]*math.log(Thermistor_R/Nom_R))**3) ) - 273.15
     else:                                                                 # 100 to 150 °C range
         LED_Temp_Cdeg = (d[1] +
-                         (d[2]*math.ln(Thermistor_R/Nom_R)) +
-                         ((d[3]*math.ln(Thermistor_R/Nom_R))**2) +
-                         ((d[4]*math.ln(Thermistor_R/Nom_R))**3) ) - 273.15
+                         (d[2]*math.log(Thermistor_R/Nom_R)) +
+                         ((d[3]*math.log(Thermistor_R/Nom_R))**2) +
+                         ((d[4]*math.log(Thermistor_R/Nom_R))**3) ) - 273.15
     print ('Temperature: {} °C'.format(LED_Temp_Cdeg))                            ## Borrar este print envetualmente.
     
 
