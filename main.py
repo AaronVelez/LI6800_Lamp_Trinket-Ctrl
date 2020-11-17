@@ -54,6 +54,13 @@ hall_threshold = 0        # Hall counts per rpm estimation event
 rpm_hall = 2                # Hall counts per revolution
 Fan_max_rpm = 3000 * 1.2    # Nominal max fan speed plus 20% tolerance
 
+# LED temperature parameters.
+# Minimum temperature is the intercept in a linear equation defining the relation between 
+# voltage and setpoint temperature.
+# Parameters and equation must coincide with LI6800 programing.
+Max_LED_Temp = 80   # Mapped to 3.3 volts
+Min_LED_Temp = 20   # Mapped to 0 volts
+
 # Thermistor parameters
 Nom_R = 10      # Nominal thermistor resistance at 25°C
 Div_R = 3.32    # Value of the voltage divider resistor in kohms
@@ -79,7 +86,6 @@ MV_max = 2**16
 Fan_PWM_duty_cycle_bits = 0     # In 16-bit format
 Fan_Tach_rpm = 0
 Fan_Tach_bits = 0               # In 16-bit format
-Fan_Speed_voltage = 0.0
 LED_Temp_Ctrl_voltage = 0.0
 LED_Temp_Ctrl_Cdeg = 0.0
 LED_Temp_voltage = 0.0
@@ -140,9 +146,13 @@ PID_fan.send(None)
 while True:
     # Step 1. Read LED temperature setpoin defined by LI6800.
     # 1.1 Read analog voltage proportional to desired LED temperature at LED_Temp_Ctrl_pin
+    LED_Temp_Ctrl_voltage = (LED_Temp_Ctrl_pin.value * Ref_voltage)/2**16
+
     # 1.2 Convert it to °C using constant (needs to be added to constants) and store it in LED_Temp_Ctrl_Cdeg
+    LED_Temp_Ctrl_Cdeg = Min_LED_Temp + (LED_Temp_Ctrl_voltage * ((Max_LED_Temp-Min_LED_Temp)/3.3))
     
-    
+
+
     # Step 2. Read LED temperature
     # 2.1 Read analog voltage at LED_Temp_pin and store it in LED_Temp_voltage
     LED_Temp_voltage = (LED_Temp_pin.value * Ref_voltage)/2**16
@@ -199,7 +209,7 @@ while True:
     # and store it in Fan_Tach_bits
     Fan_Tach_bits = (Fan_Tach_rpm * 2**16) / Fan_max_rpm
     
-    # 3.4 Output Fan_Speed_voltage value to Fan_Speed_pin, so LI6800 can read it
+    # 3.4 Output FanTach_bits value to Fan_Speed_pin, so LI6800 can read it
     # AnalogOut.value acepts 16-bit values; so Fan_Tach_bits is mapped from 0 to 3.3 V by board 
     Fan_Speed_pin.value = int(round(Fan_Tach_bits))
 
