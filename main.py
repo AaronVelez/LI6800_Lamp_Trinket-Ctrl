@@ -64,8 +64,8 @@ c = [3.3539264E-03, 2.5609446E-04, 1.9621987E-06, 4.6045930E-08]
 d = [3.3368620E-03, 2.4057263E-04, -2.6687093E-06, -4.0719355E-07]
 
 #Reference temperature
-Temp_Ctrl_Cdeg = 80
-Temp_REF_Cdeg = 22
+Temp_Ctrl_Cdeg = 80 #Maximun LED tempuerature
+Temp_REF_Cdeg = 22 #Estandar temperature
 
 # PID gains and parameters
 Kp = 0.00001 
