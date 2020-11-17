@@ -47,10 +47,11 @@ Fan_Speed_pin = AnalogOut(board.A0)
 ##### Constants definitions
 # Reference voltge.
 # The real board voltage might differ from the nominal 3.3V. For better measurements, enter thevalue measured with a calibrated multimeter.
-Ref_voltage = 3.3
+Ref_voltage = 3.29
 
 # Fan parameters
-hall_threshold = 0        # Hall counts per rpm estimation event
+############################################################
+hall_threshold = 200        # Hall counts per rpm estimation event
 rpm_hall = 2                # Hall counts per revolution
 Fan_max_rpm = 3000 * 1.2    # Nominal max fan speed plus 20% tolerance
 
@@ -62,7 +63,7 @@ Max_LED_Temp = 80   # Mapped to 3.3 volts
 Min_LED_Temp = 20   # Mapped to 0 volts
 
 # Thermistor parameters
-Nom_R = 10      # Nominal thermistor resistance at 25°C
+Nom_R = 10      # Nominal thermistor resistance in kohms at 25°C
 Div_R = 3.32    # Value of the voltage divider resistor in kohms
 # Manufacturer (Amphenol) constants for calculate termistor resistance of material type F
 a = [3.3538646E-03, 2.56544090E-04, 1.9243889E-06, 1.0969244E-07]
@@ -145,50 +146,55 @@ PID_fan.send(None)
 ##### It runs forever
 while True:
     # Step 1. Read LED temperature setpoin defined by LI6800.
+    print("Step 1 start")
     # 1.1 Read analog voltage proportional to desired LED temperature at LED_Temp_Ctrl_pin
     LED_Temp_Ctrl_voltage = (LED_Temp_Ctrl_pin.value * Ref_voltage)/65535
+    print('LED Temp Ctrl voltage: {} volts'.format(LED_Temp_Ctrl_voltage))
 
     # 1.2 Convert it to °C using constant (needs to be added to constants) and store it in LED_Temp_Ctrl_Cdeg
     LED_Temp_Ctrl_Cdeg = Min_LED_Temp + (LED_Temp_Ctrl_voltage * ((Max_LED_Temp-Min_LED_Temp)/3.3))
-    
+    print('LED Temp Ctrl Cdeg: {} °C'.format(LED_Temp_Ctrl_Cdeg))
 
 
     # Step 2. Read LED temperature
+    print("Step 2 start")
     # 2.1 Read analog voltage at LED_Temp_pin and store it in LED_Temp_voltage
     LED_Temp_voltage = (LED_Temp_pin.value * Ref_voltage)/65535
-    
+    print('LED Temp voltage: {} volts'.format(LED_Temp_voltage))
+
     # 2.2 Translate read voltage to Thermistor resistance
     Thermistor_R = (LED_Temp_voltage*Div_R)/(Ref_voltage - LED_Temp_voltage)
-    print('Thermistor resistance: {} ohms'.format(Thermistor_R))                  ## Borrar este print envetualmente.
+    print('Thermistor resistance: {} kohms'.format(Thermistor_R))                  ## Borrar este print envetualmente.
     
     # 2.3 Translate thermistor resistance to LED temperature and store it in LED_Temp_Cdeg 
-    if Thermistor_R/Nom_R >= 68.6 and Thermistor_R/Nom_R < 3.274:         # -50 to 0 °C range
-        LED_Temp_Cdeg = (a[0] +
+    if Thermistor_R/Nom_R <= 68.6 and Thermistor_R/Nom_R > 3.274:         # -50 to 0 °C range
+        LED_Temp_Cdeg = (1 / (a[0] +
                          (a[1]*math.log(Thermistor_R/Nom_R)) +
                          ((a[2]*math.log(Thermistor_R/Nom_R))**2) +
-                         ((a[3]*math.log(Thermistor_R/Nom_R))**3) ) - 273.15
-    elif Thermistor_R/Nom_R >= 3.274 and Thermistor_R/Nom_R < 0.36036:    # 0 to 50 °C range
-        LED_Temp_Cdeg = (b[0] +
+                         ((a[3]*math.log(Thermistor_R/Nom_R))**3) )) - 273.15
+    elif Thermistor_R/Nom_R <= 3.274 and Thermistor_R/Nom_R > 0.36036:    # 0 to 50 °C range
+        LED_Temp_Cdeg = (1 / (b[0] +
                          (b[1]*math.log(Thermistor_R/Nom_R)) +
                          ((b[2]*math.log(Thermistor_R/Nom_R))**2) +
-                         ((b[3]*math.log(Thermistor_R/Nom_R))**3) ) - 273.15
-    elif Thermistor_R/Nom_R >= 0.36036 and Thermistor_R/Nom_R < 0.06831:  # 50 to 100 °C range
-        LED_Temp_Cdeg = (c[0] +
+                         ((b[3]*math.log(Thermistor_R/Nom_R))**3) )) - 273.15
+    elif Thermistor_R/Nom_R <= 0.36036 and Thermistor_R/Nom_R > 0.06831:  # 50 to 100 °C range
+        LED_Temp_Cdeg = (1 / (c[0] +
                          (c[1]*math.log(Thermistor_R/Nom_R)) +
                          ((c[2]*math.log(Thermistor_R/Nom_R))**2) +
-                         ((c[3]*math.log(Thermistor_R/Nom_R))**3) ) - 273.15
+                         ((c[3]*math.log(Thermistor_R/Nom_R))**3) )) - 273.15
     else:                                                                 # 100 to 150 °C range
-        LED_Temp_Cdeg = (d[0] +
+        LED_Temp_Cdeg = (1 / (d[0] +
                          (d[1]*math.log(Thermistor_R/Nom_R)) +
                          ((d[2]*math.log(Thermistor_R/Nom_R))**2) +
-                         ((d[3]*math.log(Thermistor_R/Nom_R))**3) ) - 273.15
+                         ((d[3]*math.log(Thermistor_R/Nom_R))**3) )) - 273.15
     print ('Temperature: {} °C'.format(LED_Temp_Cdeg))                            ## Borrar este print envetualmente.
     
 
 
     # Step 3. Read fan speed and send it to LI6800
     # 3.1 Read digital pulses at Fan_Tach_pin
-    hall_count = 0
+    ########################################################################
+    hall_count = 1
     on_state = False
     start = time.monotonic()
     while True:
@@ -232,5 +238,5 @@ while True:
     # 5.1 Write to Fan_PWM_pin the new PWM duty cycle in 16-bit format (Fan_PWM_duty_cycle_bits) calculated by the PID algorithm
     Fan_PWM_pin.duty_cycle = Fan_PWM_duty_cycle_bits
 
-    print('Time: {}'.format(time.time()))
+    print('Time: {}'.format(time.monotonic()))
     time.sleep(1)
