@@ -21,7 +21,7 @@ import pulseio
 import time
 import math
 from digitalio import DigitalInOut, Direction, Pull
-from analogio import AnalogIn
+from analogio import AnalogIn, AnalogOut
 
 
 ##### Pin definitions
