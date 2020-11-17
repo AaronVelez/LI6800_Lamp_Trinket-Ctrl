@@ -206,7 +206,7 @@ while True:
     end = time.monotonic()
     
     # 3.2 Calculate fan speed in rpm and store it in Fan_Tach_rpm
-    Fan_Tach_rpm = (hall_count / (end - start)) / rpm_hall
+    Fan_Tach_rpm = ((hall_count / (end - start)) / rpm_hall) * 60
 
     # 3.3 Convert Fan_Tach_rpm into a 16-bit value, mapping the maximum fan speed (Fan_max_rpm constant) to 65,536,
     # and store it in Fan_Tach_bits
