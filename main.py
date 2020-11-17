@@ -77,7 +77,7 @@ Kd = 0.000001
 beta = 1
 gamma = 0
 MV_min = 0
-MV_max = 2**16
+MV_max = 65535
 
 
 
@@ -146,7 +146,7 @@ PID_fan.send(None)
 while True:
     # Step 1. Read LED temperature setpoin defined by LI6800.
     # 1.1 Read analog voltage proportional to desired LED temperature at LED_Temp_Ctrl_pin
-    LED_Temp_Ctrl_voltage = (LED_Temp_Ctrl_pin.value * Ref_voltage)/2**16
+    LED_Temp_Ctrl_voltage = (LED_Temp_Ctrl_pin.value * Ref_voltage)/65535
 
     # 1.2 Convert it to °C using constant (needs to be added to constants) and store it in LED_Temp_Ctrl_Cdeg
     LED_Temp_Ctrl_Cdeg = Min_LED_Temp + (LED_Temp_Ctrl_voltage * ((Max_LED_Temp-Min_LED_Temp)/3.3))
@@ -155,7 +155,7 @@ while True:
 
     # Step 2. Read LED temperature
     # 2.1 Read analog voltage at LED_Temp_pin and store it in LED_Temp_voltage
-    LED_Temp_voltage = (LED_Temp_pin.value * Ref_voltage)/2**16
+    LED_Temp_voltage = (LED_Temp_pin.value * Ref_voltage)/65535
     
     # 2.2 Translate read voltage to Thermistor resistance
     Thermistor_R = (LED_Temp_voltage*Div_R)/(Ref_voltage - LED_Temp_voltage)
@@ -207,7 +207,7 @@ while True:
 
     # 3.3 Convert Fan_Tach_rpm into a 16-bit value, mapping the maximum fan speed (Fan_max_rpm constant) to 65,536,
     # and store it in Fan_Tach_bits
-    Fan_Tach_bits = (Fan_Tach_rpm * 2**16) / Fan_max_rpm
+    Fan_Tach_bits = (Fan_Tach_rpm * 65535) / Fan_max_rpm
     
     # 3.4 Output FanTach_bits value to Fan_Speed_pin, so LI6800 can read it
     # AnalogOut.value acepts 16-bit values; so Fan_Tach_bits is mapped from 0 to 3.3 V by board 
