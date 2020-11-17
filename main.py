@@ -34,7 +34,7 @@ Fan_Tach_pin.direction = Direction.INPUT
 Fan_Tach_pin.pull = Pull.UP
 
 # Analog LED temperature setpoint
-LED_Temp_Ctrl_pin = AnalogIn(board.A4)
+LED_Temp_Ctrl_pin = AnalogIn(board.A2)
 
 # Analog LED temperature read
 LED_Temp_pin = AnalogIn(board.A1)
