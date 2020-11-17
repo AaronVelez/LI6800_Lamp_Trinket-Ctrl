@@ -234,3 +234,5 @@ while True:
     # Step 5. Set new Fan speed
     # 5.1 Write to Fan_PWM_pin the new PWM duty cycle in 16-bit format (Fan_PWM_duty_cycle_bits) calculated by the PID algorithm
     Fan_PWM_pin.duty_cycle = Fan_PWM_duty_cycle_bits
+
+    time.sleep(1)
