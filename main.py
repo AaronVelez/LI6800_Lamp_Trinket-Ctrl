@@ -17,11 +17,11 @@
 
 ##### Module imports
 import board
-import analogio
 import pulseio
 import time
 import math
 from digitalio import DigitalInOut, Direction, Pull
+from analogio import AnalogIn
 
 
 ##### Pin definitions
