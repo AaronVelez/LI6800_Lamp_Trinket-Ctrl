@@ -26,10 +26,10 @@ from analogio import AnalogIn, AnalogOut
 
 ##### Pin definitions
 # 4-wire fan PWM control pin
-Fan_PWM_pin = pulseio.PWMOut(board.D4, frequency=25000, duty_cycle=0)
+Fan_PWM_pin = pulseio.PWMOut(board.D3, frequency=25000, duty_cycle=0)
 
 # 4-wire fan tachometer
-Fan_Tach_pin = DigitalInOut(board.D3)
+Fan_Tach_pin = DigitalInOut(board.D4)
 Fan_Tach_pin.direction = Direction.INPUT
 Fan_Tach_pin.pull = Pull.UP
 
