@@ -28,7 +28,7 @@ from analogio import AnalogIn, AnalogOut
 # 4-wire fan PWM control pin
 Fan_PWM_pin = pulseio.PWMOut(board.D4, frequency=25000, duty_cycle=0)
 
-# 4-wire fan tachometer 
+# 4-wire fan tachometer
 Fan_Tach_pin = DigitalInOut(board.D3)
 Fan_Tach_pin.direction = Direction.INPUT
 Fan_Tach_pin.pull = Pull.UP
@@ -48,20 +48,20 @@ Fan_Speed_pin = AnalogOut(board.A0)
 # Reference voltge.
 # The real board voltage might differ from the nominal 3.3V. For better measurements, enter thevalue measured with a calibrated multimeter.
 Ref_voltage = 3.29
-n = 25              # voltage is measured n times
+n = 100              # voltage is measured n times
 
 # Fan parameters
 ############################################################
-hall_threshold = 100        # Hall counts per rpm estimation event
+hall_threshold = 50        # Hall counts per rpm estimation event
 rpm_hall = 2                # Hall counts per revolution
 Fan_max_rpm = 3000 * 1.15    # Nominal max fan speed plus 15% tolerance
 
 # LED temperature parameters.
-# Minimum temperature is the intercept in a linear equation defining the relation between 
+# Minimum temperature is the intercept in a linear equation defining the relation between
 # voltage and setpoint temperature.
 # Parameters and equation must coincide with LI6800 programing.
-Max_LED_Temp = 80   # Mapped to 3.3 volts
-Min_LED_Temp = 20   # Mapped to 0 volts
+Max_LED_Temp = 65   # Mapped to 3.3 volts
+Min_LED_Temp = 25   # Mapped to 0 volts
 
 # Thermistor parameters
 Nom_R = 10      # Nominal thermistor resistance in kohms at 25°C
@@ -73,15 +73,15 @@ c = [3.3539264E-03, 2.5609446E-04, 1.9621987E-06, 4.6045930E-08]
 d = [3.3368620E-03, 2.4057263E-04, -2.6687093E-06, -4.0719355E-07]
 
 # PID gains and parameters
-Kp = 25
-Ki = 0.1
-Kd = 10
+Kp = 20000
+Ki = 1500
+Kd = 375
 MV_bar = 0
 beta = 1
-gamma = 0
+gamma = 0.1
 MV_min = 21845
 MV_max = 65535
-
+N = 5
 
 
 
@@ -98,28 +98,31 @@ LED_Temp_Cdeg =0.0
 
 ##### Functions
 # PID function attributed to secction "4.5 Realizable PID Control" https://github.com/jckantor/CBE30338
-def PID(Kp, Ki, Kd, MV_bar=0, MV_min=0, MV_max=65535, beta=1, gamma=0):
+def PID(Kp, Ki, Kd, MV_bar=0, MV_min=0, MV_max=65535, beta=1, gamma=0, N=5):
     # initialize stored data
-    eD_prev = 0
     t_prev = -100
     P = 0
     I = 0
     D = 0
-    
+    S = 0
+
     # initial control
     MV = MV_bar
-    
+
     while True:
         # yield MV, wait for new t, SP, PV, TR
         data = yield MV
-        
+
         # see if a tracking data is being supplied
         if len(data) < 4:
-            t, PV, SP = data
+            t, SP, PV = data
+            print("No TR")
         else:
-            t, PV, SP, TR = data
+            t, SP, PV, TR = data
             I = TR - MV_bar - P - D
-        
+            print ('TR: {}'.format(TR))
+            print ('I_start: {}'.format(I))
+
         # PID calculations
         print("PID calculation start")
         print ('MVmax: {}'.format(MV_max))
@@ -128,7 +131,7 @@ def PID(Kp, Ki, Kd, MV_bar=0, MV_min=0, MV_max=65535, beta=1, gamma=0):
         I = I + Ki*(SP - PV)*(t - t_prev)
         print ('I: {}'.format(I))
         eD = gamma*SP - PV
-        D = Kd*(eD - eD_prev)/(t - t_prev)
+        D = N*Kp*(Kd*eD - S)/(Kd + N*Kp*(t - t_prev))
         print ('D: {}'.format(D))
         MV = MV_bar + P + I + D
         print ('MVraw: {}'.format(MV))
@@ -137,17 +140,17 @@ def PID(Kp, Ki, Kd, MV_bar=0, MV_min=0, MV_max=65535, beta=1, gamma=0):
         MV = MV_min if MV < MV_min else MV_max if MV > MV_max else MV
         print ('MV: {}'.format(MV))
         I = MV - MV_bar - P - D
-        
+
         # update stored data for next iteration
-        eD_prev = eD
+        S = D*(t - t_prev) + S
         t_prev = t
 
-        
+
 
 ##### Setup
 # Create and initialize PID control
-PID_fan = PID(Kp, Ki, Kd, MV_bar, MV_min, MV_max, beta, gamma) # NEEDS TUNING!
-PID_fan.send(None) 
+PID_fan = PID(Kp, Ki, Kd, MV_bar, MV_min, MV_max, beta, gamma, N) # NEEDS TUNING!
+PID_fan.send(None)
 
 
 
@@ -183,8 +186,8 @@ while True:
     # 2.2 Translate read voltage to Thermistor resistance
     Thermistor_R = (LED_Temp_voltage*Div_R)/(Ref_voltage - LED_Temp_voltage)
     print('Thermistor resistance: {} kohms'.format(Thermistor_R))                  ## Borrar este print envetualmente.
-    
-    # 2.3 Translate thermistor resistance to LED temperature and store it in LED_Temp_Cdeg 
+
+    # 2.3 Translate thermistor resistance to LED temperature and store it in LED_Temp_Cdeg
     if Thermistor_R/Nom_R <= 68.6 and Thermistor_R/Nom_R > 3.274:         # -50 to 0 °C range
         LED_Temp_Cdeg = (1 / (a[0] +
                          (a[1]*math.log(Thermistor_R/Nom_R)) +
@@ -206,7 +209,8 @@ while True:
                          ((d[2]*math.log(Thermistor_R/Nom_R))**2) +
                          ((d[3]*math.log(Thermistor_R/Nom_R))**3) )) - 273.15
     print ('Temperature: {} °C'.format(LED_Temp_Cdeg))                            ## Borrar este print envetualmente.
-    
+    print((LED_Temp_Cdeg,))
+    time.sleep(0.1)
 
 
     # Step 3. Read fan speed and send it to LI6800
@@ -226,10 +230,10 @@ while True:
         if hall_count >= hall_threshold:
             break
     end = time.monotonic()
-    
+
     # 3.2 Calculate fan speed in rpm and store it in Fan_Tach_rpm
     Fan_Tach_rpm = ((hall_count / (end - start)) / rpm_hall) * 60
-    print ('Fan speed: {} rpm'.format(Fan_Tach_rpm)) 
+    print ('Fan speed: {} rpm'.format(Fan_Tach_rpm))
 
     # 3.3 Convert Fan_Tach_rpm into a 16-bit value, mapping the maximum fan speed (Fan_max_rpm constant) to 65,536,
     # and store it in Fan_Tach_bits
@@ -237,10 +241,10 @@ while True:
     print ('Fan speed: {} bits'.format(Fan_Tach_bits))
 
     # 3.4 Output FanTach_bits value to Fan_Speed_pin, so LI6800 can read it
-    # AnalogOut.value acepts 16-bit values; so Fan_Tach_bits is mapped from 0 to 3.3 V by board 
+    # AnalogOut.value acepts 16-bit values; so Fan_Tach_bits is mapped from 0 to 3.3 V by board
     Fan_Speed_pin.value = int(round(Fan_Tach_bits))
 
-    
+
 
     # Step 4. Run PID control algorithm.
     print("Step 4 start")
@@ -249,13 +253,14 @@ while True:
     t = time.monotonic()
     PV = LED_Temp_Cdeg
     SP = LED_Temp_Ctrl_Cdeg
-    TR = Fan_Tach_bits
+    #SP = 28     # Override for debugging
+    #TR = Fan_Tach_bits
     # Given time (t) process variable (PV), setpoint (SP) and tracked MV (TR), it returns manipulated variable (MV) and P, I, D and d
-    MV = PID_fan.send([t, PV, SP, TR])
+    MV = PID_fan.send([t, PV, SP])
     Fan_PWM_duty_cycle_bits = MV
     print ('PID PWM control: {} %'.format(Fan_PWM_duty_cycle_bits*100/65535))
 
-    
+
     # Step 5. Set new Fan speed
     # 5.1 Write to Fan_PWM_pin the new PWM duty cycle in 16-bit format (Fan_PWM_duty_cycle_bits) calculated by the PID algorithm
     Fan_PWM_pin.duty_cycle = int(round(Fan_PWM_duty_cycle_bits))
